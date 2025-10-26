@@ -54,7 +54,42 @@ void marche()
 
     'etape6';
     servogauchepied.write(80);
-    delay(300); 
+    delay(300);
+}
+
+void course()
+{
+    'etape1';
+    servogauchepied.write(110);
+    delay(100);
+    servodroitepied.write(105);
+    delay(500);
+
+    'etape2';
+    servodroitebassin.write(55);
+    servogauchebassin.write(55);
+    servogauchepied.write(80);
+    delay(300);
+
+    'etape3';
+    servodroitepied.write(80);
+    delay(300);
+
+    'etape4';
+    servodroitepied.write(40);
+    delay(150);
+    servogauchepied.write(55);
+    delay(300);
+
+    'etape5';
+    servodroitebassin.write(105);
+    servogauchebassin.write(105);
+    servodroitepied.write(80);
+    delay(300);
+
+    'etape6';
+    servogauchepied.write(80);
+    delay(300);
 }
 
 void loop()
@@ -64,5 +99,7 @@ void loop()
     {
         placement();
     }
+    a=a+1;
     marche();
+    course();
 }
