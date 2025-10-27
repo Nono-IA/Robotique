@@ -10,7 +10,7 @@ void setup()
 }
 int a = 0;
 
-void placement()
+void init()
 {
     servogauchepied.write(60);
     servodroitepied.write(100);
@@ -97,9 +97,17 @@ void loop()
     'setup';
     if (a == 0)
     {
-        placement();
+        init();
     }
-    a=a+1;
+    a = a + 1;
     marche();
     course();
+    if (a == 9)
+    {
+        marche();
+    }
+    while (a < 10)
+    {
+        inti();
+    }
 }
