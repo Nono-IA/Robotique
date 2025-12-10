@@ -19,10 +19,10 @@ int distG; // distance obstacle
 int analogPinG = 1;
 int analogPinD = 0;
 bool mar; // mode marche(true) ou course(false)
-int vitesse_etape = 200;
-int vitesse_equilibre = vitesse_etape / 2;
-int vitesse_redescente = 30;
-int vitesse_smooth = 5;
+int vitesse_etape = 0;
+int vitesse_equilibre = 75;  // 100ms pour que le robot se stabilise
+int vitesse_redescente = 17; // 30ms pour descendre tranquillement
+int vitesse_smooth = 8 ;
 
 void initia()
 {
@@ -164,6 +164,10 @@ void course()
 
 void droite()
 {
+    if (mar == false)
+    {
+        initia();
+    }
     // etape1
     servogauchepied.write(105);
     delay(vitesse_equilibre);
@@ -215,6 +219,10 @@ void droite()
 
 void gauche()
 {
+    if (mar == false)
+    {
+        initia();
+    }
     // etape1
     servodroitepied.write(45);
     delay(vitesse_equilibre);
@@ -340,46 +348,85 @@ void loop()
     if (a == 0)
     {
         initia();
-        while (distD >= 300 && distG >= 300)
+        while (distD <= 300 || distG <= 300)
         {
             distD = analogRead(analogPinD);
             distG = analogRead(analogPinG);
+            Serial.print("distG = ");
+            Serial.print(distG);
+            Serial.print(": distD = ");
+            Serial.println(distD);
+            delay(200);
         }
+        a = a + 1;
     }
-    a = a + 1;
-    if (distD >= 250 && distG >= 250)
     {
-        while (distD >= 250 && distG >= 250)
+        distD = analogRead(analogPinD);
+        distG = analogRead(analogPinG);
+        Serial.print("distG = ");
+        Serial.print(distG);
+        Serial.print(": distD = ");
+        Serial.println(distD);
+        delay(200);
+    }
+
+    // Logique d'évitement d'obstacles
+    if (distD >= 200 && distG >= 200) // obstacle devant les deux capteurs
+    {
+        while (distD >= 200 && distG >= 200)
         {
             arriere();
             distD = analogRead(analogPinD);
             distG = analogRead(analogPinG);
         }
     }
-    if (distD >= 250 && distG <= 250)
+    if (distD >= 100 && distG <= 100) // obstacle à droite seulement
     {
-        while (distD >= 250 && distG <= 250)
+        while (distD >= 100 && distG <= 100)
         {
             gauche();
             distD = analogRead(analogPinD);
             distG = analogRead(analogPinG);
         }
     }
-    if (distD <= 250 && distG >= 250)
+    if (distD <= 150 && distG >= 150) // obstacle à gauche seulement
     {
-        while (distD <= 250 && distG >= 250)
+        while (distD <= 150 && distG >= 100)
         {
             droite();
             distD = analogRead(analogPinD);
             distG = analogRead(analogPinG);
         }
     }
-    if (distD <= 100 && distG <= 100)
+    if (distD <= 70 && distG <= 70) // pas d'obstacle
     {
         course();
     }
-    else
+    else // pas d'obstacle proche
     {
         marche();
     }
+    
+
+    /*// Algorithme de la main droite
+    if (distD < 150)
+    {
+        // Si pas d'obstacle à droite, avancer
+        marche();
+    }
+    else if (distD >= 150 && distG < 150)
+    {
+        // Si obstacle à droite mais pas à gauche, tourner à droite pour suivre le mur
+        droite();
+    }
+    else if (distD >= 150 && distG >= 150)
+    {
+        // Si obstacles des deux côtés, faire demi-tour
+        arriere();
+    }
+    else
+    {
+        // Si obstacle à gauche mais pas à droite, avancer ou ajuster
+        marche();
+    }*/
 }
